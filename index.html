@@ -266,6 +266,66 @@
     box-shadow:var(--shadow-card);
   }
 
+  /* ---------- weekly schedule ---------- */
+  .schedule-card{ padding:22px 24px; margin-bottom:14px; }
+  .schedule-card__title{ font-size:14px; font-weight:600; color:var(--ink); }
+  .schedule-card__desc{ font-size:12px; color:var(--ink-muted); margin-top:3px; max-width:560px; }
+
+  .schedule-body{ display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:start; margin-top:18px; }
+
+  .schedule-quickfill{
+    display:flex; align-items:center; gap:8px; margin-bottom:16px;
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 12px; flex-wrap:wrap;
+  }
+  .schedule-quickfill label{ font-size:12px; color:var(--ink-muted); white-space:nowrap; }
+  .schedule-quickfill input[type="number"]{
+    flex:1; min-width:140px;
+    border:1px solid var(--line); border-radius:6px; padding:7px 9px;
+    font-family:var(--font-mono); font-size:12.5px; font-weight:600; color:var(--ink); background:#fff;
+  }
+  .btn-distribute{
+    border:1px solid var(--mint); background:var(--mint-pale); color:var(--mint-deep);
+    font-size:12px; font-weight:600; padding:7px 12px; border-radius:6px; cursor:pointer;
+    transition:background .15s, color .15s; white-space:nowrap;
+  }
+  .btn-distribute:hover{ background:var(--mint); color:#fff; }
+
+  .week-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  .day-card{
+    border:1px solid var(--line); border-radius:var(--radius-md); padding:10px 4px 12px;
+    text-align:center; display:flex; flex-direction:column; align-items:center; gap:7px;
+    background:var(--paper); transition:border-color .15s, opacity .15s;
+  }
+  .day-card.is-inactive{ opacity:0.5; }
+  .day-card__label{ font-size:10.5px; font-weight:600; color:var(--ink); text-transform:uppercase; letter-spacing:0.02em; }
+
+  .day-toggle{ position:relative; display:inline-block; width:30px; height:18px; }
+  .day-toggle input{ opacity:0; width:0; height:0; position:absolute; }
+  .day-toggle .slider{ position:absolute; inset:0; background:var(--line); border-radius:20px; cursor:pointer; transition:background .15s; }
+  .day-toggle .slider:before{
+    content:""; position:absolute; height:12px; width:12px; left:3px; top:3px;
+    background:#fff; border-radius:50%; transition:transform .15s; box-shadow:0 1px 2px rgba(22,49,63,0.2);
+  }
+  .day-toggle input:checked + .slider{ background:var(--mint); }
+  .day-toggle input:checked + .slider:before{ transform:translateX(12px); }
+
+  .day-card__input{
+    width:100%; text-align:center; border:1px solid var(--line); border-radius:6px;
+    padding:6px 2px; font-family:var(--font-mono); font-size:12.5px; font-weight:600;
+    color:var(--ink); background:#fff;
+  }
+  .day-card__input:disabled{ background:var(--line-soft); color:var(--ink-muted); cursor:not-allowed; }
+
+  .schedule-summary{
+    display:flex; justify-content:space-between; align-items:center; margin-top:16px;
+    padding-top:14px; border-top:1px solid var(--line);
+  }
+  .schedule-summary__total{ font-size:13px; color:var(--ink-muted); }
+  .schedule-summary__total b{ font-family:var(--font-mono); color:var(--ink); font-size:15px; }
+
+  .schedule-chart-wrap{ position:relative; height:248px; margin-top:10px; }
+
   .kpi-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -410,10 +470,17 @@
     .kpi-grid{ grid-template-columns:repeat(2,1fr); }
     .hero-row{ grid-template-columns:1fr; }
     .split-row{ grid-template-columns:1fr; }
+    .schedule-body{ grid-template-columns:1fr; gap:20px; }
+  }
+  @media (max-width: 700px){
+    .week-grid{ grid-template-columns:repeat(4,1fr); }
   }
   @media (max-width: 520px){
     .kpi-grid{ grid-template-columns:1fr; }
     .needed-stats{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width: 420px){
+    .week-grid{ grid-template-columns:repeat(3,1fr); }
   }
 </style>
 </head>
@@ -430,21 +497,7 @@
     <p class="sidebar__eyebrow">Simulador interno</p>
     <h2 class="sidebar__heading">Parámetros de la simulación</h2>
 
-    <div class="field">
-      <div class="field__label">
-        <span>Pacientes por semana</span>
-        <span class="field__value"><span id="patientsValueLabel">80</span></span>
-      </div>
-      <input type="range" id="patientsRange" min="0" max="300" step="1" value="80" aria-label="Pacientes por semana">
-      <div class="chips" id="patientChips">
-        <button type="button" class="chip" data-value="50">50</button>
-        <button type="button" class="chip is-active" data-value="80">80</button>
-        <button type="button" class="chip" data-value="120">120</button>
-        <button type="button" class="chip" data-value="200">200</button>
-      </div>
-    </div>
-
-    <p class="sidebar__eyebrow" style="margin-top:22px;">Mezcla de servicios</p>
+    <p class="sidebar__eyebrow" style="margin-top:0;">Mezcla de servicios</p>
     <table class="svc-table" aria-label="Mezcla de servicios y precios">
       <thead>
         <tr><th>Servicio</th><th>Precio</th><th>Mezcla</th></tr>
@@ -480,8 +533,39 @@
     <div class="page-head">
       <p class="page-head__eyebrow">Clínica Medivisión · Panel de administración</p>
       <h1>Simulador de facturación</h1>
-      <p>Ajusta el volumen de pacientes y la mezcla de servicios para proyectar la facturación semanal, mensual, trimestral y anual, y descubrir cuántos pacientes se necesitan para alcanzar la meta del mes.</p>
+      <p>Define tu agenda semanal de pacientes y la mezcla de servicios para proyectar la facturación semanal, mensual, trimestral y anual, y descubrir cuántos pacientes se necesitan para alcanzar la meta del mes.</p>
     </div>
+
+    <!-- Weekly schedule -->
+    <section class="card schedule-card">
+      <div class="schedule-card__head">
+        <div class="schedule-card__title">Agenda semanal de pacientes</div>
+        <div class="schedule-card__desc">Marca los días en que la clínica atiende y la cantidad de pacientes agendados en cada uno. El total semanal alimenta todas las proyecciones del panel.</div>
+      </div>
+
+      <div class="schedule-body">
+        <div>
+          <div class="schedule-quickfill">
+            <label for="quickTotalInput">Reparto rápido</label>
+            <input type="number" id="quickTotalInput" min="0" step="1" placeholder="Total pacientes/semana">
+            <button type="button" class="btn-distribute" id="distributeBtn">Repartir entre días activos</button>
+          </div>
+
+          <div class="week-grid" id="weekGrid" aria-label="Agenda semanal por día"></div>
+
+          <div class="schedule-summary">
+            <div class="schedule-summary__total">Total: <b id="scheduleTotalLabel">0</b> pacientes/semana · <span id="scheduleActiveDaysLabel">0 días activos</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="chart-card__title" style="font-size:13px;">Pacientes agendados por día</div>
+          <div class="schedule-chart-wrap">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- KPI row -->
     <section class="kpi-grid" aria-label="Resumen de facturación proyectada">
@@ -590,10 +674,10 @@
       <summary>¿Cómo se calculan estas cifras?</summary>
       <div class="methodology__body">
         El <code>ticket promedio</code> se calcula ponderando el precio de cada servicio por su porcentaje de mezcla.
-        La <code>facturación semanal</code> es igual a pacientes por semana × ticket promedio.
+        La <code>facturación semanal</code> es la suma de pacientes agendados en cada día activo de tu agenda semanal, multiplicada por el ticket promedio.
         Para los demás periodos se usan promedios estándar de calendario: <code>mensual</code> = semanal × 4.33 semanas,
         <code>trimestral</code> = semanal × 13 semanas, <code>anual</code> = semanal × 52 semanas.
-        Los <code>pacientes requeridos</code> para la meta se obtienen dividiendo la meta mensual entre 4.33 y, a su vez, entre el ticket promedio.
+        Los <code>pacientes requeridos</code> para la meta se obtienen dividiendo la meta mensual entre 4.33 y, a su vez, entre el ticket promedio; ese faltante también se reparte entre tus días activos para estimar cuántos pacientes más necesitas por día.
       </div>
     </details>
 
@@ -614,7 +698,17 @@
     { name:'Terapia / tratamiento', price:120, weight:20 },
     { name:'Cirugía ambulatoria', price:800, weight:10 }
   ];
-  const DEFAULT_PATIENTS = 80;
+  const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const DAY_ABBR = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const DEFAULT_SCHEDULE = [
+    { active:true,  patients:14 },
+    { active:true,  patients:14 },
+    { active:true,  patients:14 },
+    { active:true,  patients:14 },
+    { active:true,  patients:14 },
+    { active:true,  patients:10 },
+    { active:false, patients:0  }
+  ];
   const DEFAULT_GOAL = 50000;
 
   const COLORS = ['#5FB897', '#28506A', '#C97A3D', '#6B8CA3'];
@@ -623,13 +717,15 @@
   const fmtNum0 = new Intl.NumberFormat('en-US', { maximumFractionDigits:0 });
 
   // ---------- DOM refs ----------
-  const patientsRange = document.getElementById('patientsRange');
-  const patientsValueLabel = document.getElementById('patientsValueLabel');
+  const weekGrid = document.getElementById('weekGrid');
+  const quickTotalInput = document.getElementById('quickTotalInput');
+  const distributeBtn = document.getElementById('distributeBtn');
+  const scheduleTotalLabel = document.getElementById('scheduleTotalLabel');
+  const scheduleActiveDaysLabel = document.getElementById('scheduleActiveDaysLabel');
   const goalInput = document.getElementById('goalInput');
   const serviceTableBody = document.getElementById('serviceTableBody');
   const avgTicketLabel = document.getElementById('avgTicketLabel');
   const resetBtn = document.getElementById('resetBtn');
-  const patientChips = document.getElementById('patientChips');
 
   const kpiWeekly = document.getElementById('kpiWeekly');
   const kpiWeeklySub = document.getElementById('kpiWeeklySub');
@@ -706,6 +802,57 @@
     if (totalWeight <= 0) return 0;
     const weighted = services.reduce((s,x) => s + x.price * x.weight, 0);
     return weighted / totalWeight;
+  }
+
+  // ---------- weekly schedule build ----------
+  function buildScheduleGrid(schedule){
+    weekGrid.innerHTML = '';
+    schedule.forEach((d, i) => {
+      const card = document.createElement('div');
+      card.className = 'day-card' + (d.active ? '' : ' is-inactive');
+      card.innerHTML = `
+        <span class="day-card__label">${DAY_ABBR[i]}</span>
+        <label class="day-toggle">
+          <input type="checkbox" class="day-active" data-index="${i}" ${d.active ? 'checked' : ''} aria-label="Activar ${DAYS[i]}">
+          <span class="slider"></span>
+        </label>
+        <input type="number" class="day-card__input day-patients" data-index="${i}" value="${d.patients}" min="0" step="1" ${d.active ? '' : 'disabled'} aria-label="Pacientes ${DAYS[i]}">
+      `;
+      weekGrid.appendChild(card);
+    });
+    weekGrid.querySelectorAll('.day-active').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const card = e.target.closest('.day-card');
+        const numInput = card.querySelector('.day-patients');
+        card.classList.toggle('is-inactive', !e.target.checked);
+        numInput.disabled = !e.target.checked;
+        render();
+      });
+    });
+    weekGrid.querySelectorAll('.day-patients').forEach(inp => {
+      inp.addEventListener('input', render);
+    });
+  }
+
+  function getScheduleFromDOM(){
+    const actives = weekGrid.querySelectorAll('.day-active');
+    const patientsInputs = weekGrid.querySelectorAll('.day-patients');
+    const schedule = [];
+    actives.forEach((cb, i) => {
+      schedule.push({
+        active: cb.checked,
+        patients: parseFloat(patientsInputs[i].value) || 0
+      });
+    });
+    return schedule;
+  }
+
+  function computeWeeklyPatients(schedule){
+    return schedule.reduce((s,d) => s + (d.active ? d.patients : 0), 0);
+  }
+
+  function countActiveDays(schedule){
+    return schedule.reduce((s,d) => s + (d.active ? 1 : 0), 0);
   }
 
   // ---------- charts ----------
@@ -788,8 +935,44 @@
 
   const initialTotalWeight = DEFAULT_SERVICES.reduce((s,x) => s + x.weight, 0) || 1;
   const initialAvgTicket = computeAvgTicket(DEFAULT_SERVICES);
-  const initialWeekly = DEFAULT_PATIENTS * initialAvgTicket;
+  const initialWeeklyPatients = DEFAULT_SCHEDULE.reduce((s,d) => s + (d.active ? d.patients : 0), 0);
+  const initialWeekly = initialWeeklyPatients * initialAvgTicket;
   const initialRevenues = DEFAULT_SERVICES.map(s => initialWeekly * (s.weight / initialTotalWeight));
+
+  const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+  const weeklyChart = new Chart(weeklyCtx, {
+    type:'bar',
+    data:{
+      labels: DAY_ABBR,
+      datasets:[{
+        label:'Pacientes agendados',
+        data: DEFAULT_SCHEDULE.map(d => d.active ? d.patients : 0),
+        backgroundColor: DEFAULT_SCHEDULE.map(d => d.active ? '#5FB897' : '#E1E8E5'),
+        borderRadius:6,
+        maxBarThickness:36
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'#16313F',
+          padding:10,
+          bodyFont:{ family:"'IBM Plex Mono', monospace", size:11 },
+          callbacks:{
+            title:(items) => DAYS[items[0].dataIndex],
+            label:(item) => `${fmtNum0.format(item.parsed.y)} pacientes`
+          }
+        }
+      },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:11, weight:600 } } },
+        y:{ beginAtZero:true, grid:{ color:'#EDF2F0' }, ticks:{ font:{ size:11 }, precision:0 } }
+      }
+    }
+  });
 
   const serviceCtx = document.getElementById('serviceChart').getContext('2d');
   const serviceChart = new Chart(serviceCtx, {
@@ -828,8 +1011,16 @@
 
   // ---------- core render ----------
   function render(){
-    const patients = Math.max(0, parseFloat(patientsRange.value) || 0);
-    patientsValueLabel.textContent = fmtNum0.format(patients);
+    const schedule = getScheduleFromDOM();
+    const patients = computeWeeklyPatients(schedule);
+    const activeDays = countActiveDays(schedule);
+
+    scheduleTotalLabel.textContent = fmtNum0.format(patients);
+    scheduleActiveDaysLabel.textContent = `${activeDays} día${activeDays === 1 ? '' : 's'} activo${activeDays === 1 ? '' : 's'}`;
+
+    weeklyChart.data.datasets[0].data = schedule.map(d => d.active ? d.patients : 0);
+    weeklyChart.data.datasets[0].backgroundColor = schedule.map(d => d.active ? '#5FB897' : '#E1E8E5');
+    weeklyChart.update('none');
 
     const services = getServicesFromDOM();
     const avgTicket = computeAvgTicket(services);
@@ -891,8 +1082,9 @@
         neededResult.className = 'needed-result ok';
         neededResult.textContent = `✓ Meta alcanzada — superávit de ${fmtNum0.format(Math.abs(gap))} pacientes/semana sobre lo requerido.`;
       } else {
+        const perDayHint = activeDays > 0 ? ` (~${Math.ceil(gap / activeDays)} pacientes adicionales por día activo)` : '';
         neededResult.className = 'needed-result gap';
-        neededResult.textContent = `Faltan ${fmtNum0.format(gap)} pacientes/semana (≈ ${fmtNum0.format(gap*WEEKS_MONTH)} al mes) para alcanzar la meta.`;
+        neededResult.textContent = `Faltan ${fmtNum0.format(gap)} pacientes/semana${perDayHint} para alcanzar la meta.`;
       }
     } else {
       neededTarget.textContent = '—';
@@ -939,36 +1131,33 @@
   }
 
   // ---------- events ----------
-  patientsRange.addEventListener('input', () => {
-    updateChipState(patientsRange.value);
-    render();
-  });
   goalInput.addEventListener('input', render);
 
-  patientChips.addEventListener('click', (e) => {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    patientsRange.value = btn.dataset.value;
-    updateChipState(btn.dataset.value);
+  distributeBtn.addEventListener('click', () => {
+    const total = Math.max(0, Math.round(parseFloat(quickTotalInput.value) || 0));
+    const schedule = getScheduleFromDOM();
+    const activeIdx = schedule.map((d,i) => d.active ? i : -1).filter(i => i >= 0);
+    if (activeIdx.length === 0) return;
+    const base = Math.floor(total / activeIdx.length);
+    const remainder = total - base * activeIdx.length;
+    const patientsInputs = weekGrid.querySelectorAll('.day-patients');
+    activeIdx.forEach((dayIdx, order) => {
+      patientsInputs[dayIdx].value = base + (order < remainder ? 1 : 0);
+    });
     render();
   });
 
-  function updateChipState(value){
-    patientChips.querySelectorAll('.chip').forEach(c => {
-      c.classList.toggle('is-active', c.dataset.value === String(value));
-    });
-  }
-
   resetBtn.addEventListener('click', () => {
-    patientsRange.value = DEFAULT_PATIENTS;
+    buildScheduleGrid(DEFAULT_SCHEDULE);
+    quickTotalInput.value = '';
     goalInput.value = DEFAULT_GOAL;
     buildServiceRows(DEFAULT_SERVICES);
-    updateChipState(DEFAULT_PATIENTS);
     render();
   });
 
   // ---------- init ----------
   buildServiceRows(DEFAULT_SERVICES);
+  buildScheduleGrid(DEFAULT_SCHEDULE);
   render();
 })();
 </script>
