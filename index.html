@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>En Construcción</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -17,233 +17,143 @@
       font-family: 'Lato', sans-serif;
     }
 
-    /* ── ALERT ── */
+    /* ALERT */
     .alert-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       z-index: 100;
     }
-
     .alert-box {
       background: #fff;
       border-top: 4px solid #e6a817;
       border-radius: 6px;
       padding: 2rem 2.2rem;
-      max-width: 400px;
-      width: 88vw;
+      max-width: 400px; width: 88vw;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15);
     }
-
     .alert-title {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.72rem;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #e6a817;
-      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #e6a817; margin-bottom: 1rem;
     }
-
     .alert-box h2 { font-weight: 400; font-size: 1rem; color: #2c2c2c; margin-bottom: 0.5rem; }
-    .alert-box p { font-weight: 300; font-size: 0.88rem; color: #666; line-height: 1.6; margin-bottom: 1.6rem; }
-
+    .alert-box p  { font-weight: 300; font-size: 0.88rem; color: #666; line-height: 1.6; margin-bottom: 1.6rem; }
     .alert-buttons { display: flex; gap: 0.75rem; justify-content: flex-end; }
-
-    .btn {
-      padding: 0.5rem 1.4rem;
-      border-radius: 4px;
-      font-family: 'Lato', sans-serif;
-      font-size: 0.85rem;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.15s;
-    }
-    .btn:hover { opacity: 0.8; }
+    .btn { padding: 0.5rem 1.4rem; border-radius: 4px; font-size: 0.85rem; cursor: pointer; border: none; }
     .btn-no  { background: #eee; color: #888; }
     .btn-yes { background: #2c2c2c; color: #fff; }
 
-    /* ── ENVELOPE SCENE ── */
+    /* ENVELOPE */
     .scene-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; opacity: 0; pointer-events: none;
       transition: opacity 0.4s ease;
     }
     .scene-overlay.show { opacity: 1; pointer-events: all; }
 
-    .env-wrap {
-      position: relative;
-      width: 280px;
-      height: 190px;
-    }
+    .env-wrap { position: relative; width: 280px; height: 190px; }
 
     .env-body {
-      position: absolute;
-      bottom: 0;
-      width: 280px;
-      height: 160px;
+      position: absolute; bottom: 0;
+      width: 280px; height: 160px;
       background: #f5e6c8;
       border-radius: 0 0 8px 8px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       overflow: hidden;
     }
-
     .env-body::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
+      content: ''; position: absolute; bottom: 0; left: 0;
       width: 0; height: 0;
       border-left: 140px solid #e8d4a8;
       border-right: 140px solid #e8d4a8;
       border-top: 80px solid transparent;
     }
-
     .env-body::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background:
-        linear-gradient(135deg, #dfc898 50%, transparent 50%),
-        linear-gradient(225deg, #dfc898 50%, transparent 50%);
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #dfc898 50%, transparent 50%),
+                  linear-gradient(225deg, #dfc898 50%, transparent 50%);
       background-size: 50% 100%;
       background-position: left, right;
       background-repeat: no-repeat;
     }
 
     .env-flap {
-      position: absolute;
-      top: 0; left: 0;
-      width: 280px;
-      height: 140px;
+      position: absolute; top: 0; left: 0;
+      width: 280px; height: 140px;
       transform-origin: top center;
       transform: rotateX(0deg);
       transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
       z-index: 10;
-      perspective: 600px;
     }
-
     .env-flap svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15)); }
     .env-flap.open { transform: rotateX(180deg); }
 
     .paper {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%) translateY(0px);
-      width: 230px;
-      background: #fffdf5;
-      border-radius: 3px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: absolute; bottom: 10px; left: 50%;
+      transform: translateX(-50%) translateY(0);
+      width: 230px; background: #fffdf5;
+      border-radius: 3px; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       padding: 1.4rem 1.4rem 1rem;
-      opacity: 0;
+      opacity: 0; z-index: 5;
       transition: transform 0.8s ease 0.7s, opacity 0.5s ease 0.7s;
-      z-index: 5;
     }
-    .paper.rise {
-      transform: translateX(-50%) translateY(-220px);
-      opacity: 1;
-    }
+    .paper.rise { transform: translateX(-50%) translateY(-220px); opacity: 1; }
 
-    /* ── LETTER CARD ── */
+    /* LETTER */
     .letter-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 300;
-      opacity: 0;
-      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; opacity: 0; pointer-events: none;
       transition: opacity 0.6s ease;
     }
     .letter-overlay.show { opacity: 1; pointer-events: all; }
 
     .letter-card {
-      background: #fffdf5;
-      border-radius: 4px;
-      max-width: 420px;
-      width: 88vw;
-      box-shadow: 0 12px 48px rgba(0,0,0,0.2);
-      overflow: hidden;
+      background: #fffdf5; border-radius: 4px;
+      max-width: 420px; width: 88vw;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.2); overflow: hidden;
       transform: translateY(20px) scale(0.97);
       transition: transform 0.5s ease;
     }
     .letter-overlay.show .letter-card { transform: translateY(0) scale(1); }
 
     .letter-top {
-      background: #2c2c2c;
-      padding: 1rem 1.6rem;
-      font-size: 0.68rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      background: #2c2c2c; padding: 1rem 1.6rem;
+      font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
       color: rgba(255,255,255,0.45);
     }
-
     .letter-body { padding: 2.2rem 2.4rem 1.6rem; }
 
     #typedMessage {
-      font-family: 'Lato', sans-serif;
-      font-weight: 400;
-      font-size: 0.97rem;
-      color: #1a1a1a;
-      line-height: 1.9;
-      margin-bottom: 1.8rem;
-      min-height: 3rem;
+      font-family: 'Lato', sans-serif; font-weight: 400;
+      font-size: 0.97rem; color: #1a1a1a;
+      line-height: 1.9; margin-bottom: 1.8rem; min-height: 3rem;
     }
 
     .sign {
-      font-weight: 300;
-      font-size: 0.78rem;
-      letter-spacing: 0.12em;
-      color: #555;
-      text-align: right;
-      opacity: 0;
-      transition: opacity 0.6s ease;
+      font-weight: 300; font-size: 0.78rem; letter-spacing: 0.12em;
+      color: #555; text-align: right;
+      opacity: 0; transition: opacity 0.6s ease;
     }
     .sign.visible { opacity: 1; }
 
     .cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      background: #1a1a1a;
-      margin-left: 2px;
-      vertical-align: text-bottom;
+      display: inline-block; width: 2px; height: 1em;
+      background: #1a1a1a; margin-left: 2px; vertical-align: text-bottom;
       animation: blink 0.7s step-end infinite;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     .close-btn {
-      display: block;
-      margin: 0 auto 1.4rem;
-      background: none;
-      border: 1px solid #e0e0e0;
-      color: #aaa;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      padding: 0.4rem 1.2rem;
-      border-radius: 3px;
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s ease;
+      display: block; margin: 0 auto 1.4rem;
+      background: none; border: 1px solid #e0e0e0; color: #aaa;
+      font-size: 0.72rem; letter-spacing: 0.1em; padding: 0.4rem 1.2rem;
+      border-radius: 3px; cursor: pointer;
+      opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
     }
     .close-btn.visible { opacity: 1; pointer-events: all; }
     .close-btn:hover { opacity: 0.6; }
@@ -272,7 +182,7 @@
     </div>
   </div>
 
-  <!-- Envelope scene -->
+  <!-- Envelope -->
   <div class="scene-overlay" id="sceneOverlay">
     <div class="env-wrap">
       <div class="paper" id="paper">
@@ -309,15 +219,20 @@
 
     function startEnvelope() {
       document.getElementById('alertOverlay').style.display = 'none';
-      const scene = document.getElementById('sceneOverlay');
+      var scene = document.getElementById('sceneOverlay');
       scene.classList.add('show');
 
-      setTimeout(() => document.getElementById('envFlap').classList.add('open'), 400);
-      setTimeout(() => document.getElementById('paper').classList.add('rise'), 1100);
-      setTimeout(() => {
-        scene.style.transition = 'opacity 0.5s ease';
+      setTimeout(function() {
+        document.getElementById('envFlap').classList.add('open');
+      }, 400);
+
+      setTimeout(function() {
+        document.getElementById('paper').classList.add('rise');
+      }, 1100);
+
+      setTimeout(function() {
         scene.style.opacity = '0';
-        setTimeout(() => {
+        setTimeout(function() {
           scene.classList.remove('show');
           scene.style.opacity = '';
           openLetter();
@@ -332,7 +247,7 @@
 
     function closeLetter() {
       document.getElementById('letterOverlay').classList.remove('show');
-      setTimeout(() => {
+      setTimeout(function() {
         document.getElementById('typedMessage').innerHTML = '<span class="cursor"></span>';
         document.getElementById('sign').classList.remove('visible');
         document.getElementById('closeBtn').classList.remove('visible');
@@ -342,16 +257,28 @@
     }
 
     function startTyping() {
-      const el = document.getElementById('typedMessage');
-      const text = 'Solo quería recordarte que...  me gustas mucho. Te quiero bb ❤️
+      var el = document.getElementById('typedMessage');
 
-Llámame cuando veas este mensaje.';
+      // Message split into parts: plain text or line breaks
+      var parts = [
+        'Solo quer\u00eda recordarte que... me gustas mucho. Te quiero bb \u2764\ufe0f',
+        '\n\n',
+        'Ll\u00e1mame cuando veas este mensaje.'
+      ];
 
-      // split into grapheme-safe tokens
-      const tokens = [...new Intl.Segmenter('es', { granularity: 'grapheme' }).segment(text)].map(s => s.segment);
+      // Flatten into character tokens
+      var tokens = [];
+      parts.forEach(function(part) {
+        if (part === '\n\n') {
+          tokens.push({ ch: '\n\n', br: true });
+        } else {
+          var segs = Array.from(part);
+          segs.forEach(function(ch) { tokens.push({ ch: ch, br: false }); });
+        }
+      });
 
-      let i = 0;
-      let displayed = '';
+      var i = 0;
+      var displayed = '';
 
       function typeNext() {
         if (i >= tokens.length) {
@@ -361,13 +288,20 @@ Llámame cuando veas este mensaje.';
           return;
         }
 
-        const ch = tokens[i];
-        if (ch === '\n') { displayed += '<br>'; } else { displayed += ch; }
-        el.innerHTML = displayed + '<span class="cursor"></span>';
-        i++;
-
-        const pause = (ch === '.' || ch === '…' || ch === ',') ? 350 : 80;
-        setTimeout(typeNext, pause);
+        var token = tokens[i];
+        if (token.br) {
+          displayed += '<br><br>';
+          el.innerHTML = displayed + '<span class="cursor"></span>';
+          i++;
+          setTimeout(typeNext, 300);
+        } else {
+          displayed += token.ch;
+          el.innerHTML = displayed + '<span class="cursor"></span>';
+          i++;
+          var ch = token.ch;
+          var pause = (ch === '.' || ch === ',') ? 350 : 80;
+          setTimeout(typeNext, pause);
+        }
       }
 
       typeNext();
