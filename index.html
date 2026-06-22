@@ -13,25 +13,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f0f0f0;
+      background: #ffffff;
       font-family: 'Lato', sans-serif;
     }
-
-    .page { text-align: center; }
-    .page h1 {
-      font-family: 'Playfair Display', serif;
-      font-weight: 400;
-      font-size: 1.4rem;
-      color: #ccc;
-      margin-bottom: 0.4rem;
-    }
-    .page p { font-weight: 300; font-size: 0.78rem; letter-spacing: 0.1em; color: #bbb; }
 
     /* ── ALERT ── */
     .alert-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -45,7 +35,7 @@
       padding: 2rem 2.2rem;
       max-width: 400px;
       width: 88vw;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
     }
 
     .alert-title {
@@ -60,33 +50,16 @@
       margin-bottom: 1rem;
     }
 
-    .alert-box h2 {
-      font-weight: 400;
-      font-size: 1rem;
-      color: #2c2c2c;
-      margin-bottom: 0.5rem;
-    }
+    .alert-box h2 { font-weight: 400; font-size: 1rem; color: #2c2c2c; margin-bottom: 0.5rem; }
+    .alert-box p { font-weight: 300; font-size: 0.88rem; color: #666; line-height: 1.6; margin-bottom: 1.6rem; }
 
-    .alert-box p {
-      font-weight: 300;
-      font-size: 0.88rem;
-      color: #666;
-      line-height: 1.6;
-      margin-bottom: 1.6rem;
-    }
-
-    .alert-buttons {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: flex-end;
-    }
+    .alert-buttons { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
     .btn {
       padding: 0.5rem 1.4rem;
       border-radius: 4px;
       font-family: 'Lato', sans-serif;
       font-size: 0.85rem;
-      letter-spacing: 0.05em;
       cursor: pointer;
       border: none;
       transition: opacity 0.15s;
@@ -95,8 +68,8 @@
     .btn-no  { background: #eee; color: #888; }
     .btn-yes { background: #2c2c2c; color: #fff; }
 
-    /* ── LETTER ── */
-    .letter-overlay {
+    /* ── ENVELOPE SCENE ── */
+    .scene-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.45);
@@ -106,30 +79,112 @@
       z-index: 200;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
+    }
+    .scene-overlay.show { opacity: 1; pointer-events: all; }
+
+    .env-wrap {
+      position: relative;
+      width: 280px;
+      height: 190px;
     }
 
-    .letter-overlay.show {
+    .env-body {
+      position: absolute;
+      bottom: 0;
+      width: 280px;
+      height: 160px;
+      background: #f5e6c8;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .env-body::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 140px solid #e8d4a8;
+      border-right: 140px solid #e8d4a8;
+      border-top: 80px solid transparent;
+    }
+
+    .env-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        linear-gradient(135deg, #dfc898 50%, transparent 50%),
+        linear-gradient(225deg, #dfc898 50%, transparent 50%);
+      background-size: 50% 100%;
+      background-position: left, right;
+      background-repeat: no-repeat;
+    }
+
+    .env-flap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 280px;
+      height: 140px;
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
+      z-index: 10;
+      perspective: 600px;
+    }
+
+    .env-flap svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15)); }
+    .env-flap.open { transform: rotateX(180deg); }
+
+    .paper {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%) translateY(0px);
+      width: 230px;
+      background: #fffdf5;
+      border-radius: 3px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      padding: 1.4rem 1.4rem 1rem;
+      opacity: 0;
+      transition: transform 0.8s ease 0.7s, opacity 0.5s ease 0.7s;
+      z-index: 5;
+    }
+    .paper.rise {
+      transform: translateX(-50%) translateY(-220px);
       opacity: 1;
-      pointer-events: all;
     }
 
-    .envelope {
-      background: #ffffff;
+    /* ── LETTER CARD ── */
+    .letter-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+    .letter-overlay.show { opacity: 1; pointer-events: all; }
+
+    .letter-card {
+      background: #fffdf5;
       border-radius: 4px;
       max-width: 420px;
       width: 88vw;
-      box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.2);
       overflow: hidden;
-      transform: translateY(30px) scale(0.96);
+      transform: translateY(20px) scale(0.97);
       transition: transform 0.5s ease;
     }
+    .letter-overlay.show .letter-card { transform: translateY(0) scale(1); }
 
-    .letter-overlay.show .envelope {
-      transform: translateY(0) scale(1);
-    }
-
-    .envelope-top {
+    .letter-top {
       background: #2c2c2c;
       padding: 1rem 1.6rem;
       font-size: 0.68rem;
@@ -138,36 +193,29 @@
       color: rgba(255,255,255,0.45);
     }
 
-    .letter-body {
-      padding: 2.4rem 2.4rem 2rem;
-      min-height: 160px;
-    }
+    .letter-body { padding: 2.2rem 2.4rem 1.6rem; }
 
-    .letter-body p.message {
+    #typedMessage {
       font-family: 'Lato', sans-serif;
       font-weight: 400;
-      font-size: 1rem;
+      font-size: 0.97rem;
       color: #1a1a1a;
       line-height: 1.9;
-      margin-bottom: 2rem;
-      min-height: 3.8rem;
+      margin-bottom: 1.8rem;
+      min-height: 3rem;
     }
 
-    .letter-body p.sign {
+    .sign {
       font-weight: 300;
       font-size: 0.78rem;
       letter-spacing: 0.12em;
-      color: #444;
+      color: #555;
       text-align: right;
       opacity: 0;
       transition: opacity 0.6s ease;
     }
+    .sign.visible { opacity: 1; }
 
-    .letter-body p.sign.visible {
-      opacity: 1;
-    }
-
-    /* blinking cursor */
     .cursor {
       display: inline-block;
       width: 2px;
@@ -177,7 +225,6 @@
       vertical-align: text-bottom;
       animation: blink 0.7s step-end infinite;
     }
-
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0; }
@@ -185,7 +232,7 @@
 
     .close-btn {
       display: block;
-      margin: 0 auto 1.6rem;
+      margin: 0 auto 1.4rem;
       background: none;
       border: 1px solid #e0e0e0;
       color: #aaa;
@@ -194,26 +241,15 @@
       padding: 0.4rem 1.2rem;
       border-radius: 3px;
       cursor: pointer;
-      transition: opacity 0.15s;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.6s ease;
     }
-
-    .close-btn.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-
+    .close-btn.visible { opacity: 1; pointer-events: all; }
     .close-btn:hover { opacity: 0.6; }
   </style>
 </head>
 <body>
-
-  <div class="page">
-    <h1>Mi Sitio Web</h1>
-    <p>coming soon</p>
-  </div>
 
   <!-- Alert -->
   <div class="alert-overlay" id="alertOverlay">
@@ -231,17 +267,35 @@
       ¿Deseas leerlo?</p>
       <div class="alert-buttons">
         <button class="btn btn-no" onclick="dismiss()">No</button>
-        <button class="btn btn-yes" onclick="openLetter()">Sí, leer mensaje</button>
+        <button class="btn btn-yes" onclick="startEnvelope()">Sí, leer mensaje</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Envelope scene -->
+  <div class="scene-overlay" id="sceneOverlay">
+    <div class="env-wrap">
+      <div class="paper" id="paper">
+        <svg width="100%" height="8" style="margin-bottom:8px"><line x1="0" y1="4" x2="100%" y2="4" stroke="#e0d8c0" stroke-width="1"/></svg>
+        <svg width="100%" height="8" style="margin-bottom:8px"><line x1="0" y1="4" x2="100%" y2="4" stroke="#e0d8c0" stroke-width="1"/></svg>
+        <svg width="100%" height="8"><line x1="0" y1="4" x2="100%" y2="4" stroke="#e0d8c0" stroke-width="1"/></svg>
+      </div>
+      <div class="env-body"></div>
+      <div class="env-flap" id="envFlap">
+        <svg viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="0,0 280,0 140,130" fill="#e8d4a8"/>
+          <polygon points="0,0 280,0 140,130" fill="none" stroke="#d4bc88" stroke-width="1"/>
+        </svg>
       </div>
     </div>
   </div>
 
   <!-- Letter -->
   <div class="letter-overlay" id="letterOverlay">
-    <div class="envelope">
-      <div class="envelope-top">Mensaje privado · Solo para ti</div>
+    <div class="letter-card">
+      <div class="letter-top">Mensaje privado · Solo para ti</div>
       <div class="letter-body">
-        <p class="message" id="typedMessage"><span class="cursor"></span></p>
+        <p id="typedMessage"><span class="cursor"></span></p>
         <p class="sign" id="sign">Atte: Oscar</p>
       </div>
       <button class="close-btn" id="closeBtn" onclick="closeLetter()">cerrar</button>
@@ -253,49 +307,48 @@
       document.getElementById('alertOverlay').style.display = 'none';
     }
 
-    function openLetter() {
+    function startEnvelope() {
       document.getElementById('alertOverlay').style.display = 'none';
-      const overlay = document.getElementById('letterOverlay');
-      overlay.classList.add('show');
+      const scene = document.getElementById('sceneOverlay');
+      scene.classList.add('show');
+
+      setTimeout(() => document.getElementById('envFlap').classList.add('open'), 400);
+      setTimeout(() => document.getElementById('paper').classList.add('rise'), 1100);
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.5s ease';
+        scene.style.opacity = '0';
+        setTimeout(() => {
+          scene.classList.remove('show');
+          scene.style.opacity = '';
+          openLetter();
+        }, 500);
+      }, 2400);
+    }
+
+    function openLetter() {
+      document.getElementById('letterOverlay').classList.add('show');
       setTimeout(startTyping, 600);
     }
 
     function closeLetter() {
       document.getElementById('letterOverlay').classList.remove('show');
-      // reset for re-open
       setTimeout(() => {
         document.getElementById('typedMessage').innerHTML = '<span class="cursor"></span>';
         document.getElementById('sign').classList.remove('visible');
         document.getElementById('closeBtn').classList.remove('visible');
+        document.getElementById('envFlap').classList.remove('open');
+        document.getElementById('paper').classList.remove('rise');
       }, 500);
     }
 
     function startTyping() {
       const el = document.getElementById('typedMessage');
-      // segments: text or special tokens
-      const segments = [
-        { type: 'text', value: 'Te Quiero Mucho ' },
-        { type: 'bold-start' },
-        { type: 'text', value: 'Estibalys' },
-        { type: 'bold-end' },
-        { type: 'text', value: ' ' },
-        { type: 'emoji', value: '❤️' },
-        { type: 'text', value: '.\nLlámame cuando veas este mensaje.' },
-      ];
+      const text = 'Solo quería recordarte que...  me gustas mucho. Te quiero bb ❤️
 
-      // flatten into tokens
-      const tokens = [];
-      segments.forEach(seg => {
-        if (seg.type === 'bold-start' || seg.type === 'bold-end') {
-          tokens.push({ ch: null, isEmoji: false, tag: seg.type });
-        } else if (seg.type === 'emoji') {
-          tokens.push({ ch: seg.value, isEmoji: true, tag: null });
-        } else {
-          for (const ch of seg.value) {
-            tokens.push({ ch, isEmoji: false, tag: null });
-          }
-        }
-      });
+Llámame cuando veas este mensaje.';
+
+      // split into grapheme-safe tokens
+      const tokens = [...new Intl.Segmenter('es', { granularity: 'grapheme' }).segment(text)].map(s => s.segment);
 
       let i = 0;
       let displayed = '';
@@ -308,36 +361,16 @@
           return;
         }
 
-        const { ch, isEmoji, tag } = tokens[i];
-        if (tag === 'bold-start') {
-          displayed += '<strong>';
-        } else if (tag === 'bold-end') {
-          displayed += '</strong>';
-        } else if (ch === '\n') {
-          displayed += '<br>';
-        } else {
-          displayed += ch;
-        }
-
-        // Build safe display: close any open <strong> before cursor
-        let preview = displayed;
-        const openCount = (displayed.match(/<strong>/g) || []).length;
-        const closeCount = (displayed.match(/<\/strong>/g) || []).length;
-        if (openCount > closeCount) preview += '</strong>';
-
-        el.innerHTML = preview + '<span class="cursor"></span>';
+        const ch = tokens[i];
+        if (ch === '\n') { displayed += '<br>'; } else { displayed += ch; }
+        el.innerHTML = displayed + '<span class="cursor"></span>';
         i++;
-        const delay = tag ? 0 : isEmoji ? 120 : 55;
-        setTimeout(typeNext, delay);
+
+        const pause = (ch === '.' || ch === '…' || ch === ',') ? 350 : 80;
+        setTimeout(typeNext, pause);
       }
 
       typeNext();
-    }
-
-    function formatText(str) {
-      return str.split('\n').map(line =>
-        line === '' ? '<br>' : line
-      ).join('<br>');
     }
   </script>
 </body>
