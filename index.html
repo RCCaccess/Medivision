@@ -227,7 +227,7 @@
       </div>
       <h2>Hola Estibalys, Bienvenida 👋</h2>
       <p>Este sitio web está actualmente en construcción.<br><br>
-      Sin embargo, tienes un <strong>mensaje privado</strong> del desarrollador.<br>
+      Sin embargo, tienes un mensaje privado de <strong>Oscar</strong>.<br>
       ¿Deseas leerlo?</p>
       <div class="alert-buttons">
         <button class="btn btn-no" onclick="dismiss()">No</button>
@@ -274,19 +274,25 @@
       const el = document.getElementById('typedMessage');
       // segments: text or special tokens
       const segments = [
-        { type: 'text', value: 'Te Quiero Estibalys ' },
+        { type: 'text', value: 'Te Quiero Mucho ' },
+        { type: 'bold-start' },
+        { type: 'text', value: 'Estibalys' },
+        { type: 'bold-end' },
+        { type: 'text', value: ' ' },
         { type: 'emoji', value: '❤️' },
         { type: 'text', value: '.\nLlámame cuando veas este mensaje.' },
       ];
 
-      // flatten into chars
-      const chars = [];
+      // flatten into tokens
+      const tokens = [];
       segments.forEach(seg => {
-        if (seg.type === 'emoji') {
-          chars.push({ ch: seg.value, isEmoji: true });
+        if (seg.type === 'bold-start' || seg.type === 'bold-end') {
+          tokens.push({ ch: null, isEmoji: false, tag: seg.type });
+        } else if (seg.type === 'emoji') {
+          tokens.push({ ch: seg.value, isEmoji: true, tag: null });
         } else {
           for (const ch of seg.value) {
-            chars.push({ ch, isEmoji: false });
+            tokens.push({ ch, isEmoji: false, tag: null });
           }
         }
       });
@@ -295,23 +301,34 @@
       let displayed = '';
 
       function typeNext() {
-        if (i >= chars.length) {
-          // remove cursor, show sign
-          el.innerHTML = formatText(displayed);
+        if (i >= tokens.length) {
+          el.innerHTML = displayed;
           document.getElementById('sign').classList.add('visible');
           document.getElementById('closeBtn').classList.add('visible');
           return;
         }
 
-        const { ch, isEmoji } = chars[i];
-        if (ch === '\n') {
-          displayed += '\n';
+        const { ch, isEmoji, tag } = tokens[i];
+        if (tag === 'bold-start') {
+          displayed += '<strong>';
+        } else if (tag === 'bold-end') {
+          displayed += '</strong>';
+        } else if (ch === '\n') {
+          displayed += '<br>';
         } else {
           displayed += ch;
         }
-        el.innerHTML = formatText(displayed) + '<span class="cursor"></span>';
+
+        // Build safe display: close any open <strong> before cursor
+        let preview = displayed;
+        const openCount = (displayed.match(/<strong>/g) || []).length;
+        const closeCount = (displayed.match(/<\/strong>/g) || []).length;
+        if (openCount > closeCount) preview += '</strong>';
+
+        el.innerHTML = preview + '<span class="cursor"></span>';
         i++;
-        setTimeout(typeNext, isEmoji ? 120 : 55);
+        const delay = tag ? 0 : isEmoji ? 120 : 55;
+        setTimeout(typeNext, delay);
       }
 
       typeNext();
