@@ -3,55 +3,325 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Para Estibalys</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Lato:wght@300&display=swap" rel="stylesheet" />
+  <title>En Construcción</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #ffffff;
+      background: #f0f0f0;
       font-family: 'Lato', sans-serif;
     }
 
-    .banner {
-      text-align: center;
-      padding: 3rem 3.5rem;
-    }
-
-    .main {
+    .page { text-align: center; }
+    .page h1 {
       font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: clamp(2rem, 6vw, 3.2rem);
-      color: #888;
       font-weight: 400;
-      margin: 0 0 0.3rem 0;
+      font-size: 1.4rem;
+      color: #ccc;
+      margin-bottom: 0.4rem;
+    }
+    .page p { font-weight: 300; font-size: 0.78rem; letter-spacing: 0.1em; color: #bbb; }
+
+    /* ── ALERT ── */
+    .alert-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
     }
 
-    .name {
-      font-family: 'Playfair Display', serif;
-      font-style: normal;
-      font-size: clamp(2.4rem, 7vw, 3.8rem);
+    .alert-box {
+      background: #fff;
+      border-top: 4px solid #e6a817;
+      border-radius: 6px;
+      padding: 2rem 2.2rem;
+      max-width: 400px;
+      width: 88vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .alert-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e6a817;
+      margin-bottom: 1rem;
+    }
+
+    .alert-box h2 {
+      font-weight: 400;
+      font-size: 1rem;
       color: #2c2c2c;
-      font-weight: 400;
-      margin: 0 0 2rem 0;
+      margin-bottom: 0.5rem;
     }
 
-    .signature {
+    .alert-box p {
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 1.6rem;
+    }
+
+    .alert-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 0.5rem 1.4rem;
+      border-radius: 4px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.8; }
+    .btn-no  { background: #eee; color: #888; }
+    .btn-yes { background: #2c2c2c; color: #fff; }
+
+    /* ── LETTER ── */
+    .letter-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .letter-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .envelope {
+      background: #ffffff;
+      border-radius: 4px;
+      max-width: 420px;
+      width: 88vw;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+      overflow: hidden;
+      transform: translateY(30px) scale(0.96);
+      transition: transform 0.5s ease;
+    }
+
+    .letter-overlay.show .envelope {
+      transform: translateY(0) scale(1);
+    }
+
+    .envelope-top {
+      background: #2c2c2c;
+      padding: 1rem 1.6rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .letter-body {
+      padding: 2.4rem 2.4rem 2rem;
+      min-height: 160px;
+    }
+
+    .letter-body p.message {
+      font-family: 'Lato', sans-serif;
+      font-weight: 400;
+      font-size: 1rem;
+      color: #1a1a1a;
+      line-height: 1.9;
+      margin-bottom: 2rem;
+      min-height: 3.8rem;
+    }
+
+    .letter-body p.sign {
       font-weight: 300;
       font-size: 0.78rem;
-      letter-spacing: 0.15em;
-      color: #bbb;
+      letter-spacing: 0.12em;
+      color: #444;
+      text-align: right;
+      opacity: 0;
+      transition: opacity 0.6s ease;
     }
+
+    .letter-body p.sign.visible {
+      opacity: 1;
+    }
+
+    /* blinking cursor */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #1a1a1a;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    .close-btn {
+      display: block;
+      margin: 0 auto 1.6rem;
+      background: none;
+      border: 1px solid #e0e0e0;
+      color: #aaa;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      padding: 0.4rem 1.2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .close-btn.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .close-btn:hover { opacity: 0.6; }
   </style>
 </head>
 <body>
-  <div class="banner">
-    <p class="main">Te Quiero</p>
-    <p class="name">Estibalys</p>
-    <p class="signature">Atte: Oscar A.</p>
+
+  <div class="page">
+    <h1>Mi Sitio Web</h1>
+    <p>coming soon</p>
   </div>
+
+  <!-- Alert -->
+  <div class="alert-overlay" id="alertOverlay">
+    <div class="alert-box">
+      <div class="alert-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e6a817" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Aviso del sistema
+      </div>
+      <h2>Hola Estibalys, Bienvenida 👋</h2>
+      <p>Este sitio web está actualmente en construcción.<br><br>
+      Sin embargo, tienes un <strong>mensaje privado</strong> del desarrollador.<br>
+      ¿Deseas leerlo?</p>
+      <div class="alert-buttons">
+        <button class="btn btn-no" onclick="dismiss()">No</button>
+        <button class="btn btn-yes" onclick="openLetter()">Sí, leer mensaje</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Letter -->
+  <div class="letter-overlay" id="letterOverlay">
+    <div class="envelope">
+      <div class="envelope-top">Mensaje privado · Solo para ti</div>
+      <div class="letter-body">
+        <p class="message" id="typedMessage"><span class="cursor"></span></p>
+        <p class="sign" id="sign">Atte: Oscar</p>
+      </div>
+      <button class="close-btn" id="closeBtn" onclick="closeLetter()">cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    function dismiss() {
+      document.getElementById('alertOverlay').style.display = 'none';
+    }
+
+    function openLetter() {
+      document.getElementById('alertOverlay').style.display = 'none';
+      const overlay = document.getElementById('letterOverlay');
+      overlay.classList.add('show');
+      setTimeout(startTyping, 600);
+    }
+
+    function closeLetter() {
+      document.getElementById('letterOverlay').classList.remove('show');
+      // reset for re-open
+      setTimeout(() => {
+        document.getElementById('typedMessage').innerHTML = '<span class="cursor"></span>';
+        document.getElementById('sign').classList.remove('visible');
+        document.getElementById('closeBtn').classList.remove('visible');
+      }, 500);
+    }
+
+    function startTyping() {
+      const el = document.getElementById('typedMessage');
+      // segments: text or special tokens
+      const segments = [
+        { type: 'text', value: 'Te Quiero Estibalys ' },
+        { type: 'emoji', value: '❤️' },
+        { type: 'text', value: '.\nLlámame cuando veas este mensaje.' },
+      ];
+
+      // flatten into chars
+      const chars = [];
+      segments.forEach(seg => {
+        if (seg.type === 'emoji') {
+          chars.push({ ch: seg.value, isEmoji: true });
+        } else {
+          for (const ch of seg.value) {
+            chars.push({ ch, isEmoji: false });
+          }
+        }
+      });
+
+      let i = 0;
+      let displayed = '';
+
+      function typeNext() {
+        if (i >= chars.length) {
+          // remove cursor, show sign
+          el.innerHTML = formatText(displayed);
+          document.getElementById('sign').classList.add('visible');
+          document.getElementById('closeBtn').classList.add('visible');
+          return;
+        }
+
+        const { ch, isEmoji } = chars[i];
+        if (ch === '\n') {
+          displayed += '\n';
+        } else {
+          displayed += ch;
+        }
+        el.innerHTML = formatText(displayed) + '<span class="cursor"></span>';
+        i++;
+        setTimeout(typeNext, isEmoji ? 120 : 55);
+      }
+
+      typeNext();
+    }
+
+    function formatText(str) {
+      return str.split('\n').map(line =>
+        line === '' ? '<br>' : line
+      ).join('<br>');
+    }
+  </script>
 </body>
 </html>
